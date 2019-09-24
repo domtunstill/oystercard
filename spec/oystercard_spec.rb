@@ -34,14 +34,19 @@ describe OysterCard do
 
     it 'when oystercard is touched in at the start of the journey, the card should be set to in journey' do
       subject.top_up(1)
-      subject.touch_in
+      subject.touch_in(:station)
       expect(subject).to be_in_journey
     end
 
     it 'when oystercard is touched in at the start of the journey, check minimum balance is £1' do
-      expect { subject.touch_in }.to raise_error ("Not enough money on your card. Your balance is: £#{subject.balance}")
+      expect { subject.touch_in(:station) }.to raise_error ("Not enough money on your card. Your balance is: £#{subject.balance}")
     end
 
+    it 'records the station that the user touches in at' do
+      subject.top_up(20)
+      subject.touch_in("Aldgate East")
+      expect(subject.entry_station).to eq "Aldgate East"
+    end
   end
 
   describe '#touch_out' do
@@ -53,8 +58,15 @@ describe OysterCard do
 
     it 'reduces the balance on the card when touching out' do
       subject.top_up(20)
-      subject.touch_in
+      subject.touch_in(:station)
       expect{subject.touch_out}.to change{subject.balance}.by(-OysterCard::MINIMUM_BALANCE)
+    end
+
+    it 'forgets the entry_station at touch out' do
+      subject.top_up(20)
+      subject.touch_in(:station)
+      subject.touch_out
+      expect(subject.entry_station).to eq nil
     end
   end
 
