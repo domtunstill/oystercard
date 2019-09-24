@@ -49,8 +49,13 @@ describe Oystercard do
   describe '#touch_in' do
 
     it 'when oystercard is touched in at the start of the journey, the card should be set to in journey' do
+      subject.top_up(1)
       subject.touch_in
       expect(subject).to be_in_journey
+    end
+
+    it 'when oystercard is touched in at the start of the journey, check minimum balance is £1' do
+      expect { subject.touch_in }.to raise_error ("Not enough money on your card. Your balance is: £#{subject.balance}")
     end
 
   end

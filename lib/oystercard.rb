@@ -21,6 +21,7 @@ class Oystercard
   end
 
   def touch_in
+    raise "Not enough money on your card. Your balance is: £#{@balance}" if @balance < 1
     @in_journey = true
   end
 
