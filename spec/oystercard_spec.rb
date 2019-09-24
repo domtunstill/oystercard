@@ -46,4 +46,22 @@ describe Oystercard do
 
   end
 
+  describe '#touch_in' do
+
+    it 'when oystercard is touched in at the start of the journey, the card should be set to in journey' do
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end
+
+  end
+
+  describe '#touch_out' do
+
+    it 'when oystercard is touched out at the end of the journey, in journey should be set to false' do
+      subject.touch_out
+      expect(subject).not_to be_in_journey
+    end
+
+  end
+
 end
