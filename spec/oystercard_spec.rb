@@ -1,6 +1,6 @@
 require 'oystercard'
 
-describe Oystercard do
+describe OysterCard do
 
   it 'initialises a new card with balance: 0' do
     expect(subject.balance).to eq 0
@@ -25,23 +25,7 @@ describe Oystercard do
     end
 
     it 'tells user balance limit exceeded' do
-      expect { subject.top_up(95) }.to raise_error("Balance limit exceeded. Please top up #{Oystercard::MAXIMUM_BALANCE - subject.balance} or less")
-    end
-
-  end
-
-  describe '#deduct' do
-
-    it 'expect oystercard to respond to top_up method' do
-      expect(subject).to respond_to(:deduct)
-    end
-
-    it 'expect fare to be deducted from oystercard balance' do
-      expect { subject.deduct(2) }.to change { subject.balance }.by(-2)
-    end
-
-    it 'returns card balance after deducting' do
-      expect(subject.deduct(2)).to match("Card balance: #{subject.balance}")
+      expect { subject.top_up(95) }.to raise_error("Balance limit exceeded. Please top up #{OysterCard::MAXIMUM_BALANCE - subject.balance} or less")
     end
 
   end
@@ -67,6 +51,11 @@ describe Oystercard do
       expect(subject).not_to be_in_journey
     end
 
+    it 'reduces the balance on the card when touching out' do
+      subject.top_up(20)
+      subject.touch_in
+      expect{subject.touch_out}.to change{subject.balance}.by(-OysterCard::MINIMUM_BALANCE)
+    end
   end
 
 end
