@@ -7,7 +7,8 @@ class OysterCard
 
   def initialize
     @balance = 0
-    @journeys = Hash.new
+    @journeys = []
+    @journey = {entry: nil, exit: nil}
   end
 
   def top_up(money)
@@ -18,19 +19,20 @@ class OysterCard
     end
   end
 
-  def touch_in(station)
+  def touch_in(entry_station)
     raise "Not enough money on your card. Your balance is: £#{@balance}" unless enough_money?
-    @entry_station = station
+    @entry_station = entry_station
   end
 
   def enough_money?
     @balance >= MINIMUM_BALANCE
   end
 
-  def touch_out(station)
+  def touch_out(exit_station)
     deduct(MINIMUM_BALANCE)
-    @journeys["Entry"] = @entry_station
-    @journeys["Exit"] = station
+    @journey[:entry] = @entry_station
+    @journey[:exit] = exit_station
+    @journeys << @journey
     @entry_station = nil
   end
 

@@ -2,7 +2,9 @@ require 'oystercard'
 
 describe OysterCard do
 
-describe '#initialize' do
+  let(:entry_station) {double :station}
+  let(:exit_station) {double :station}
+  describe '#initialize' do
 
     it 'initialises a new card with balance: 0' do
       expect(subject.balance).to eq 0
@@ -42,38 +44,38 @@ describe '#initialize' do
 
     it 'when oystercard is touched in at the start of the journey, the card should be set to in journey' do
       subject.top_up(1)
-      subject.touch_in(:station)
+      subject.touch_in(:entry_station)
       expect(subject).to be_in_journey
     end
 
     it 'when oystercard is touched in at the start of the journey, check minimum balance is £1' do
-      expect { subject.touch_in(:station) }.to raise_error ("Not enough money on your card. Your balance is: £#{subject.balance}")
+      expect { subject.touch_in(:entry_station) }.to raise_error ("Not enough money on your card. Your balance is: £#{subject.balance}")
     end
 
     it 'records the station that the user touches in at' do
       subject.top_up(20)
-      subject.touch_in("Aldgate East")
-      expect(subject.entry_station).to eq "Aldgate East"
+      subject.touch_in(:entry_station)
+      expect(subject.entry_station).to eq :entry_station
     end
   end
 
   describe '#touch_out' do
-
+    
     it 'when oystercard is touched out at the end of the journey, in journey should be set to false' do
-      subject.touch_out(:station)
+      subject.touch_out(:exit_station)
       expect(subject).not_to be_in_journey
     end
 
     it 'reduces the balance on the card when touching out' do
       subject.top_up(20)
-      subject.touch_in(:station)
-      expect{subject.touch_out(:station)}.to change{subject.balance}.by(-OysterCard::MINIMUM_BALANCE)
+      subject.touch_in(:entry_station)
+      expect{subject.touch_out(:exit_station)}.to change{subject.balance}.by(-OysterCard::MINIMUM_BALANCE)
     end
 
     it 'forgets the entry_station at touch out' do
       subject.top_up(20)
-      subject.touch_in(:station)
-      subject.touch_out(:station)
+      subject.touch_in(:entry_station)
+      subject.touch_out(:exit_station)
       expect(subject.entry_station).to eq nil
     end
 
@@ -88,9 +90,9 @@ describe '#initialize' do
 
   it "records a single journey's stations" do
     subject.top_up(20)
-    subject.touch_in("Aldgate East")
-    subject.touch_out("Upminster")
-    expect(subject.journeys).to include("Entry" => "Aldgate East", "Exit" => "Upminster")
+    subject.touch_in(:entry_station)
+    subject.touch_out(:exit_station)
+    expect(subject.journeys).to include({entry: :entry_station, exit: :exit_station})
   end
 
 end
