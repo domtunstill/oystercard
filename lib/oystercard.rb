@@ -3,9 +3,10 @@
 require_relative 'journey'
 
 class OysterCard
-  attr_reader :balance, :entry_station
+  attr_reader :balance
   MAXIMUM_BALANCE = 90
   MINIMUM_BALANCE = 1
+
 
   def initialize
     @balance = 0
@@ -22,8 +23,11 @@ class OysterCard
 
   def touch_in(entry_station)
     raise "Not enough money on your card. Your balance is: £#{@balance}" unless enough_money?
+    return @journey.start(entry_station) if @journey.journeys.count == 0 || @journey.complete?
+    deduct(@journey.fare)
+    @journey.save_journey
+    end
 
-    @entry_station = entry_station
   end
 
   def enough_money?
@@ -31,13 +35,13 @@ class OysterCard
   end
 
   def touch_out(exit_station)
-    deduct(MINIMUM_BALANCE)
-    @journey.save_journey(@entry_station, exit_station)
-    @entry_station = nil
+    @journey.finish(exit_station)
+    @journey.save_journey
+    deduct(@journey.fare)
   end
 
   def in_journey?
-    @entry_station != nil
+    !!@journey.entry_station
   end
 
   private
