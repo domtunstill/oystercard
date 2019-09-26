@@ -23,11 +23,10 @@ class OysterCard
 
   def touch_in(entry_station)
     raise "Not enough money on your card. Your balance is: £#{@balance}" unless enough_money?
-    return @journey.start(entry_station) if @journey.journeys.count == 0 || @journey.complete?
-    deduct(@journey.fare)
+    return @journey.start(entry_station) if @journey.entry_station == nil && @journey.exit_station != nil
     @journey.save_journey
-    end
-
+    deduct(@journey.fare)
+    @journey.start(entry_station)
   end
 
   def enough_money?
@@ -36,7 +35,6 @@ class OysterCard
 
   def touch_out(exit_station)
     @journey.finish(exit_station)
-    @journey.save_journey
     deduct(@journey.fare)
   end
 

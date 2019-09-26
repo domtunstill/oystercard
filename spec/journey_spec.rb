@@ -26,8 +26,9 @@ describe Journey do
     it  { is_expected.to respond_to(:save_journey) }
 
     it 'saves the last journey made on the oystercard on touch out' do
-    subject.save_journey(entry_station, exit_station)
-    expect(subject.journeys).to include(entry: entry_station, exit: exit_station)
+      subject.start(entry_station)
+      subject.finish(exit_station)
+      expect(subject.journeys).to include({entry: entry_station, exit: exit_station})
     end
 
   end
@@ -35,7 +36,7 @@ describe Journey do
   describe '#fare' do
 
     it 'check journey is complete and return MINIMUM_FARE' do
-      subject.save_journey(entry_station, exit_station)
+      allow(subject).to receive(:complete?).and_return true
       expect(subject.fare).to eq (Journey::MINIMUM_FARE)
     end
 
@@ -44,10 +45,35 @@ describe Journey do
     end
 
     it 'returns PENALTY_FARE if exit or entry station is nil' do
-      subject.save_journey(nil, exit_station)
+      allow(subject).to receive(:complete?).and_return false
       expect(subject.fare).to eq (Journey::PENALTY_FARE)
     end
 
+  end
+
+  describe '#complete?' do
+
+    it 'checks that entry and exit station are != nil' do
+      subject.start(entry_station)
+      subject.finish(exit_station)
+      expect(subject.complete?).to eq true
+    end
+  end
+
+  describe '#start' do
+
+    it 'records entry station' do
+      subject.start(entry_station)
+      expect(subject.entry_station).to eq entry_station
+    end
+  end
+
+  describe '#finish' do
+
+    it 'records exit station' do
+      subject.finish(exit_station)
+      expect(subject.exit_station).to eq exit_station
+    end 
   end
 
 end

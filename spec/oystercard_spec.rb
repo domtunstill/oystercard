@@ -45,12 +45,6 @@ describe OysterCard do
     it 'when oystercard is touched in at the start of the journey, check minimum balance is £1' do
       expect { subject.touch_in(entry_station) }.to raise_error "Not enough money on your card. Your balance is: £#{subject.balance}"
     end
-
-    it 'records the station that the user touches in at' do
-      subject.top_up(20)
-      subject.touch_in(entry_station)
-      expect(subject.entry_station).to eq entry_station
-    end
   end
 
   describe '#touch_out' do
@@ -65,13 +59,19 @@ describe OysterCard do
       expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-OysterCard::MINIMUM_BALANCE)
     end
 
-    it 'forgets the entry_station at touch out' do
-      subject.top_up(20)
+  end
+
+  describe '#in_journey?' do
+
+    it 'returns true if journey started' do
+      subject.top_up(10)
       subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
-      expect(subject.entry_station).to eq nil
+      expect(subject.in_journey?).to eq true
     end
 
+    it 'returns false if journey not started' do
+      expect(subject.in_journey?).to eq false
+    end
   end
 
 
