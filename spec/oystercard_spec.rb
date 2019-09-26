@@ -72,12 +72,6 @@ describe OysterCard do
       expect(subject.entry_station).to eq nil
     end
 
-    # it 'records the station that the user touches out at' do
-    #   subject.top_up(20)
-    #   subject.touch_in("Aldgate East")
-    #   subject.touch_out("Upminster")
-    #   expect(subject.exit_station).to eq "Upminster"
-    # end
   end
 
 

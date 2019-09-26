@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
+require_relative 'journey'
+
 class OysterCard
-  attr_reader :balance, :entry_station, :journeys
+  attr_reader :balance, :entry_station
   MAXIMUM_BALANCE = 90
   MINIMUM_BALANCE = 1
 
   def initialize
     @balance = 0
-    @last_journey = { entry: nil, exit: nil }
+    @journey = Journey.new
   end
 
   def top_up(money)
@@ -30,9 +32,7 @@ class OysterCard
 
   def touch_out(exit_station)
     deduct(MINIMUM_BALANCE)
-    @last_journey[:entry] = @entry_station
-    @last_journey[:exit] = exit_station
-    @journeys << @last_journey
+    @journey.save_journey(@entry_station, exit_station)
     @entry_station = nil
   end
 

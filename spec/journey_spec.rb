@@ -4,11 +4,15 @@ describe Journey do
 
   let(:entry_station) { double :station }
   let(:exit_station) { double :station }
-  
+
   describe '#initialize' do
 
     it 'journeys list exists and is empty' do
       expect(subject.journeys).to be_empty
+    end
+
+    it 'last journey exists and stations are equal to nil' do
+      expect(subject.last_journey).to eq ({ entry: nil, exit: nil })
     end
 
   end
@@ -19,7 +23,7 @@ describe Journey do
 
 
     it 'saves the last journey made on the oystercard on touch out' do
-    subject.save_journey( {entry: entry_station, exit: exit_station} )
+    subject.save_journey(entry_station, exit_station)
     expect(subject.journeys).to include(entry: entry_station, exit: exit_station)
     end
 
