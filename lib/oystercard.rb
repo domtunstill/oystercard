@@ -1,14 +1,13 @@
+# frozen_string_literal: true
 
 class OysterCard
-
   attr_reader :balance, :entry_station, :journeys
   MAXIMUM_BALANCE = 90
   MINIMUM_BALANCE = 1
 
   def initialize
     @balance = 0
-    @journeys = []
-    @last_journey = {entry: nil, exit: nil}
+    @last_journey = { entry: nil, exit: nil }
   end
 
   def top_up(money)
@@ -21,6 +20,7 @@ class OysterCard
 
   def touch_in(entry_station)
     raise "Not enough money on your card. Your balance is: £#{@balance}" unless enough_money?
+
     @entry_station = entry_station
   end
 
@@ -45,5 +45,4 @@ class OysterCard
   def deduct(fare)
     "Card balance: #{@balance -= fare}"
   end
-
 end

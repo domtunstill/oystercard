@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'csv'
 
 class Station
@@ -5,13 +7,12 @@ class Station
 
   def initialize(name)
     @name = name
-    zone
+    @zone = get_zone
   end
 
-  def zone 
+  def get_zone
     CSV.foreach('london_stations.csv') do |row|
       return @zone = row[5].to_i if row[0].downcase == @name.downcase
     end
   end
-
 end
