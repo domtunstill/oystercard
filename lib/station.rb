@@ -15,4 +15,5 @@ class Station
       return @zone = row[5].to_i if row[0].downcase == @name.downcase
     end
   end
+  
 end

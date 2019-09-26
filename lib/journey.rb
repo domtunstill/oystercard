@@ -8,7 +8,6 @@ class Journey
   def initialize
     @journeys = []
     @last_journey = { entry: nil, exit: nil }
-    @exit_station = ""
   end
 
   def start(entry_station)
@@ -25,7 +24,7 @@ class Journey
   def save_journey
     @last_journey[:entry] = @entry_station
     @last_journey[:exit] = @exit_station
-    @journeys << @last_journey
+    @journeys << { :entry => @entry_station, :exit => @exit_station }
   end
 
   def complete?
