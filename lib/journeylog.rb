@@ -9,13 +9,15 @@ class JourneyLog
   end
 
   def start(entry_station, journey = Journey)
-    save_journey if @journey && @journey.complete? != true
+    if @journey && @journey.complete? != true
+      save_journey
+    end
     @journey = journey.new
     @journey.start(entry_station)
   end
 
   def finish(exit_station, journey = Journey)
-    if @journey
+    if @journey && @journey.complete? == false && @journey.entry_station != nil
       @journey.finish(exit_station)
       save_journey
     else
