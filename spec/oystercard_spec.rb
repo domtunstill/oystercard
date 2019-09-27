@@ -47,6 +47,17 @@ describe OysterCard do
       expect(subject).to be_in_journey
     end
 
+    it 'touch in twice charge penalty fare edge case' do
+      subject.top_up(10)
+      allow(journey).to receive(:entry_station).and_return(nil)
+      allow(journey).to receive(:start)
+      subject.touch_in(entry_station)
+      allow(journey).to receive(:entry_station).and_return(entry_station)
+      allow(journey).to receive(:save_journey)
+      allow(journey).to receive(:fare).and_return(6)
+      expect{ subject.touch_in(entry_station) }.to change { subject.balance }.by(-6)
+    end
+
     it 'when oystercard is touched in at the start of the journey, check minimum balance is £1' do
       expect { subject.touch_in(entry_station) }.to raise_error "Not enough money on your card. Your balance is: £#{subject.balance}"
     end
@@ -71,19 +82,13 @@ describe OysterCard do
       expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-OysterCard::MINIMUM_BALANCE)
     end
 
-  end
+    it 'touch out without touching in penalty fare edge case' do
+      subject.top_up(10)
+      allow(journey).to receive(:finish)
+      allow(journey).to receive(:fare).and_return(6)
+      expect{ subject.touch_out(exit_station) }.to change { subject.balance }.by(-6)
+    end
 
-  # describe '#in_journey?' do
-  #
-  #   it 'returns true if journey started' do
-  #     subject.top_up(10)
-  #     subject.touch_in(entry_station)
-  #     expect(subject.in_journey?).to eq true
-  #   end
-  #
-  #   it 'returns false if journey not started' do
-  #     expect(subject.in_journey?).to eq false
-  #   end
-  # end
+  end
 
 end
