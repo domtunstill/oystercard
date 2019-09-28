@@ -15,11 +15,6 @@ describe Journey do
 
   describe '#fare' do
 
-    it 'check journey is complete and return MINIMUM_FARE' do
-      allow(subject).to receive(:complete?).and_return true
-      expect(subject.fare).to eq (Journey::MINIMUM_FARE)
-    end
-
     it 'penalty fare by default' do
       expect(subject.fare).to eq (Journey::PENALTY_FARE)
     end
@@ -27,6 +22,24 @@ describe Journey do
     it 'returns PENALTY_FARE if exit or entry station is nil' do
       allow(subject).to receive(:complete?).and_return false
       expect(subject.fare).to eq (Journey::PENALTY_FARE)
+    end
+
+    it 'returns MINIMUM_FARE if exit and entry station zone is the same' do
+      allow(subject).to receive(:complete?).and_return true
+      subject.start(entry_station)
+      subject.finish(exit_station)
+      allow(entry_station).to receive(:zone).and_return 1
+      allow(exit_station).to receive(:zone).and_return 1
+      expect(subject.fare).to eq (Journey::MINIMUM_FARE)
+    end
+
+    it 'returns correct fare if exit and entry station zone is different' do
+      allow(subject).to receive(:complete?).and_return true
+      subject.start(entry_station)
+      subject.finish(exit_station)
+      allow(entry_station).to receive(:zone).and_return(1)
+      allow(exit_station).to receive(:zone).and_return(3)
+      expect(subject.fare).to eq (Journey::MINIMUM_FARE + (2 * Journey::ZONE_FARE) )
     end
 
   end

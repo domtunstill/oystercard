@@ -1,13 +1,12 @@
+require_relative 'station'
+
 class Journey
 
   MINIMUM_FARE = 1
   PENALTY_FARE = 6
+  ZONE_FARE = 1
 
   attr_reader :entry_station, :exit_station, :complete
-  #
-  # def initialize
-  #   # @last_journey = { entry: nil, exit: nil }
-  # end
 
   def start(entry_station)
     @entry_station = entry_station
@@ -25,7 +24,12 @@ class Journey
   end
 
   def fare
-    @fare = complete? ? MINIMUM_FARE : PENALTY_FARE
+    if complete?
+      distance = @entry_station.zone - @exit_station.zone
+      @fare = (distance * MINIMUM_FARE).abs + MINIMUM_FARE
+    else
+      @fare = PENALTY_FARE
+    end
   end
 
 end

@@ -37,6 +37,8 @@ describe JourneyLog do
 
   describe '#save_journey' do
     it 'to save journey on completed journey' do
+      allow(entry_station).to receive(:zone).and_return(1)
+      allow(exit_station).to receive(:zone).and_return(1)
       subject.start(entry_station)
       subject.finish(exit_station)
       expect(subject.save_journey).to include(subject.journey)
@@ -49,6 +51,8 @@ describe JourneyLog do
     end
 
     it 'returns journey fare for complete journey' do
+      allow(entry_station).to receive(:zone).and_return(1)
+      allow(exit_station).to receive(:zone).and_return(1)
       subject.start(entry_station)
       subject.finish(exit_station)
       expect(subject.return_fare).to eq(1)
