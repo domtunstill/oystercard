@@ -11,10 +11,6 @@ describe Journey do
       expect(subject).not_to be_complete
     end
 
-    # it 'last journey exists and stations are equal to nil' do
-    #   expect(subject.last_journey).to eq ({ entry: nil, exit: nil })
-    # end
-
   end
 
   describe '#fare' do
@@ -41,12 +37,6 @@ describe Journey do
       subject.start(entry_station)
       subject.finish(exit_station)
       expect(subject.complete?).to eq true
-    end
-
-    it 'saves the last journey made on the oystercard on touch out' do
-      subject.start(entry_station)
-      subject.finish(exit_station)
-      expect(subject.last_journeys).to eq({entry: entry_station, exit: exit_station})
     end
 
   end

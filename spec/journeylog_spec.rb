@@ -6,12 +6,9 @@ describe JourneyLog do
   let(:entry_station) { double :station }
   let(:exit_station) { double :station }
   let(:journey) { double :journey }
+  let(:journey_class) { double 'Journey class', new: journey}
 
   describe '#initialize' do
-
-    # it 'journeys list exists and is a instance of the journey class' do
-    #   expect(subject.journey.class).to eq Journey
-    # end
 
     it 'journeys list exists and is empty' do
       expect(subject.journeys).to be_empty
@@ -21,10 +18,12 @@ describe JourneyLog do
 
   describe '#start' do
     it 'saves journey if previous journey not complete' do
-      allow(journey).to receive(:new)
+      # allow(journey).to receive(:new)
       allow(journey).to receive(:start).and_return(journey)
-      subject.start(entry_station, journey)
-      subject.start(entry_station, journey)
+      allow(journey).to receive(:complete?).and_return(false)
+      allow(journey).to receive(:fare)
+      subject.start(entry_station, journey_class)
+      subject.start(entry_station, journey_class)
       expect(subject.journeys).not_to be_empty
     end
   end

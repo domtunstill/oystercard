@@ -5,8 +5,9 @@ require 'oystercard'
 describe OysterCard do
   let(:entry_station) { double :station }
   let(:exit_station) { double :station }
-  let(:journey) { double :journey }
-  subject { described_class.new(journey) }
+  let(:journey_log) { double :journey_log }
+  let(:journey_log_class) { double 'JourneyLog class', new: journey_log }
+  subject { described_class.new(journey_log_class) }
 
   describe '#initialize' do
     it 'initialises a new card with balance: 0' do
@@ -38,23 +39,14 @@ describe OysterCard do
   end
 
   describe '#touch_in' do
-    it 'when oystercard is touched in at the start of the journey, the card should be set to in journey' do
-      subject.top_up(1)
-      allow(journey).to receive(:entry_station).and_return(nil)
-      allow(journey).to receive(:start)
-      subject.touch_in(entry_station)
-      allow(journey).to receive(:entry_station).and_return(entry_station)
-      expect(subject).to be_in_journey
-    end
 
     it 'touch in twice charge penalty fare edge case' do
       subject.top_up(10)
-      allow(journey).to receive(:entry_station).and_return(nil)
-      allow(journey).to receive(:start)
+      allow(journey_log).to receive(:start)
+      allow(journey_log).to receive(:complete?).and_return(true)
       subject.touch_in(entry_station)
-      allow(journey).to receive(:entry_station).and_return(entry_station)
-      allow(journey).to receive(:save_journey)
-      allow(journey).to receive(:fare).and_return(6)
+      allow(journey_log).to receive(:complete?).and_return(false)
+      allow(journey_log).to receive(:return_fare).and_return(6)
       expect{ subject.touch_in(entry_station) }.to change { subject.balance }.by(-6)
     end
 
@@ -64,28 +56,22 @@ describe OysterCard do
   end
 
   describe '#touch_out' do
-    it 'when oystercard is touched out at the end of the journey, in journey should be set to false' do
-      allow(journey).to receive(:entry_station).and_return(nil)
-      allow(journey).to receive(:finish)
-      allow(journey).to receive(:fare).and_return(1)
-      subject.touch_out(exit_station)
-      expect(subject).not_to be_in_journey
-    end
 
     it 'reduces the balance on the card when touching out' do
       subject.top_up(20)
-      allow(journey).to receive(:entry_station).and_return(nil)
-      allow(journey).to receive(:start)
-      allow(journey).to receive(:finish)
+      allow(journey_log).to receive(:entry_station).and_return(nil)
+      allow(journey_log).to receive(:start)
+      allow(journey_log).to receive(:complete?).and_return(true)
+      allow(journey_log).to receive(:finish)
       subject.touch_in(entry_station)
-      allow(journey).to receive(:fare).and_return(1)
+      allow(journey_log).to receive(:return_fare).and_return(1)
       expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-OysterCard::MINIMUM_BALANCE)
     end
 
     it 'touch out without touching in penalty fare edge case' do
       subject.top_up(10)
-      allow(journey).to receive(:finish)
-      allow(journey).to receive(:fare).and_return(6)
+      allow(journey_log).to receive(:finish)
+      allow(journey_log).to receive(:return_fare).and_return(6)
       expect{ subject.touch_out(exit_station) }.to change { subject.balance }.by(-6)
     end
 
